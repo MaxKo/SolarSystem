@@ -12,9 +12,13 @@ public class SpaceCanvas extends JPanel implements MouseListener {
 		
 	SolarSystem sc = new SolarSystem();      // Contains the image to draw on MyCanvas
 
+		
+	
 	    public SpaceCanvas(){
 	        // Initialize img here.
 	        this.addMouseListener(this);
+	        
+	       // new ThreadMover().run();
 	    }
 
 	    public void paintComponent(Graphics g){
@@ -26,14 +30,14 @@ public class SpaceCanvas extends JPanel implements MouseListener {
 	    }
 
 	    public void mouseClicked(MouseEvent e){
-	        int mx = e.getX();
-	        int my = e.getY();
+	       // int mx = e.getX();
+	        //int my = e.getY();
 
 	        //System.out.println("mouse clicked x:" + mx + " y:" + my);
 	        
 	        sc.calcNewPositions();
 	        
-	        System.out.println(sc.toString());
+	        //System.out.println(sc.toString());
 	        
 	        
 	        paintComponent(this.getGraphics());

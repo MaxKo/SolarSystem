@@ -11,15 +11,14 @@ public class SolarSystem {
 	List<CosmicBody> bodies = new ArrayList<CosmicBody>();
 	
 	public SolarSystem() {
-		bodies.add(new CosmicBody("Sun", 50, 50, 3, 1000, 0, 0) );
-		bodies.add(new CosmicBody("Earth", 60, 50, 1, 2, 0, -1));
+		bodies.add(new CosmicBody("Sun", 750, 350, 30, 10000, 0, 0) );
+		bodies.add(new CosmicBody("Earth", 1000, 350, 10, 20, 0, -2));
+		bodies.add(new CosmicBody("Mars", 1200, 350, 10, 20, 0, -1.5));
 	}
-
 
 	public void draw(Graphics g) {
 		bodies.stream().forEach(cs -> cs.drawSwing(g));
 	}
-	
 	
 	public void calcNewPositions() {
 		for (CosmicBody cs1 : bodies) {
@@ -29,19 +28,14 @@ public class SolarSystem {
 			for (CosmicBody cs2 : bodies) {
 				if (cs1 == cs2) continue;
 				
-				double force = forceBetween(cs1, cs2);
-				
 				double dx = cs2.getX() - cs1.getX();
 				double dy = cs2.getY() - cs1.getY();
 				double gip = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 				
+				double force = forceBetween(cs1, cs2);
 				
-				
-				shiftX +=  dx / gip / cs1.getM(); 
-				shiftY +=  dy / gip / cs1.getM();
-				
-				//shiftX += forceBetween(cs1.getX(), cs2.getX(), cs1.getM(), cs2.getM(), "x:");
-				//shiftY += forceBetween(cs1.getY(), cs2.getY(), cs1.getM(), cs2.getM(), "y:");
+				shiftX +=  force * dx / gip / cs1.getM(); 
+				shiftY +=  force * dy / gip / cs1.getM();
 			}
 			
 			cs1.setVx(cs1.getVx() + shiftX);
@@ -49,8 +43,9 @@ public class SolarSystem {
 		}
 		
 		bodies.stream().forEach(cs -> cs.move());
-		
 	}
+	
+	
 	
 	public double forceBetween(CosmicBody cs1, CosmicBody cs2) {
 		double result = 1;
@@ -60,30 +55,13 @@ public class SolarSystem {
 		
 		double absDist = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2));
 		
-		result *= 0.01;
+		result *= 0.1;
 		result *= cs1.getM();
 		result *= cs2.getM();
 		result /= Math.pow(absDist, 2);
 		
 		return result;
 	}
-	
-	public double forceBetween(double c1, double c2, double m1, double m2, String c) {
-		double result = 1;
-		double r = c1 - c2;
-		
-		result *= 0.1;
-		result *= m1;
-		result *= m2;
-		result /= Math.pow(r, 2);
-		
-		result *= Math.signum(c2 - c1);
-		
-		System.out.print(c + Math.signum(c2 - c1) + " force:" + round(result));
-		
-		return result;
-	}
-	
 
 	
 	@Override
@@ -92,9 +70,4 @@ public class SolarSystem {
 	            .map( Object::toString )
 	            .collect( Collectors.joining( ", " ) );
 	}
-	
-	private double round(double k) {
-		return Math.round(k * 100) / 100;
-	}
-	//private getScaleShift
 }

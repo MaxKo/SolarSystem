@@ -15,12 +15,14 @@ import kerberos.solar.system.model.SpaceCanvas;
 
 @SpringBootApplication
 public class SwingApp extends JFrame {
-
-    public SwingApp() {
-
+	private static final long serialVersionUID = 7394858081577163782L;
+	
+	public SwingApp() {
         initUI();
     }
 
+    
+    SpaceCanvas spaceCanvas;
     private void initUI() {
         var quitButton = new JButton("Quit");
 
@@ -28,17 +30,15 @@ public class SwingApp extends JFrame {
             System.exit(0);
         });
 
-//        createLayout(quitButton);
-
-        setTitle("Quit button");
+        setTitle("Solar System");
         setSize(2000, 1000);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
         
-        SpaceCanvas spaceCanvas = new SpaceCanvas();
-        add(spaceCanvas);
+        spaceCanvas = new SpaceCanvas();
         
+        add(spaceCanvas);
     }
 
     private void createLayout(JComponent... arg) {
@@ -67,6 +67,44 @@ public class SwingApp extends JFrame {
 
             var ex = ctx.getBean(SwingApp.class);
             ex.setVisible(true);
+            
+            ThreadMover tm = new ThreadMover(ex);
+            
+            tm.setDaemon(true);
+            tm.run();
         });
+        
+        
+        
     }
+    
+    
+	static class ThreadMover extends Thread {
+			SwingApp ex;
+		   public ThreadMover(SwingApp ex) {
+			   this.ex = ex;
+		}
+
+		public void run(){
+			   try {
+				Thread.sleep(2000);
+				
+				   while(true) {
+					   ex.nextMove();
+					   
+					   Thread.sleep(10);
+				   }
+				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+	public void nextMove() {
+		if (spaceCanvas == null) return;
+		spaceCanvas.mouseClicked(null);
+	}
 }
