@@ -20,6 +20,22 @@ public class OneTriangle {
         gl2.glViewport( 0, 0, width, height );
     }
     
+    
+    protected static void setup( GL3 gl3, int width, int height ) {
+       /* gl3.glMatrixMode( GL2.GL_PROJECTION );
+        gl2.glLoadIdentity();
+
+        // coordinate system origin at lower left with width and height same as the window
+        GLU glu = new GLU();
+        glu.gluOrtho2D( 0.0f, width, 0.0f, height );
+
+        gl2.glMatrixMode( GL2.GL_MODELVIEW );
+        gl2.glLoadIdentity();
+
+        gl2.glViewport( 0, 0, width, height );
+    */
+    }
+    
 
     protected static void render( GL2 gl2, int width, int height ) {
         gl2.glClear( GL.GL_COLOR_BUFFER_BIT );
@@ -34,5 +50,18 @@ public class OneTriangle {
         gl2.glColor3f( 0, 0, 1 );
         gl2.glVertex2f( width / 2, height );
         gl2.glEnd();
+    }
+    
+    
+    protected static void render( GL3 gl3, int width, int height ) {
+    	
+    	gl3.glClear(GL.GL_COLOR_BUFFER_BIT );
+    	gl3.glBeginConditionalRender(1, GL.GL_TRIANGLES);
+    	gl3.glVertexAttrib3f(1, 0, 0, 0);
+    	gl3.glVertexAttrib3f(1, width, height, width + height / 2);
+    	gl3.glVertexAttrib3f(1, width, height, 0);
+    	gl3.glEndConditionalRender();
+    	
+    	
     }
 }

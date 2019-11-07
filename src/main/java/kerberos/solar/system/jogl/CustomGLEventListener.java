@@ -23,6 +23,7 @@ public class CustomGLEventListener implements GLEventListener {
     @Override
     public void display( GLAutoDrawable glautodrawable ) {
         //OneTriangle.render( glautodrawable.getGL().getGL2(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
-    	OneTriangle.render( glautodrawable.getGL().getGL2(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
+    	//OneTriangle.render( glautodrawable.getGL().getGL2(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
+    	OneTriangle.render( glautodrawable.getGL().getGL3(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
     }
 }

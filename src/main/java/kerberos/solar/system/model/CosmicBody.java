@@ -67,7 +67,7 @@ public class CosmicBody {
 
 	public void drawSwing(Graphics g) {
 		//int scale = 10;
-		g.drawOval((int)x, (int)y, (int)r, (int)r );
+		g.drawOval((int)(x - r / 2), (int)(y - r / 2), (int)r, (int)r );
 	}
 	
 	@Override
