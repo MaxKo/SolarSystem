@@ -1,16 +1,21 @@
 package kerberos.solar.system.jogl.cube;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.JFrame;
 
+import com.jogamp.nativewindow.util.Point;
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
@@ -45,7 +50,7 @@ import com.sun.opengl.util.texture.TextureIO;
  * @author <a href="mailto:kain@land-of-kain.de">Kai Ruhl</a>
  * @since 26 Feb 2009
  */
-public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
+public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener, MouseWheelListener, MouseListener, MouseMotionListener {
 
     /** Serial version UID. */
     private static final long serialVersionUID = 1L;
@@ -69,6 +74,9 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
     private Texture solarPanelTexture;
     
     private SolarSystem solarSystem = new SolarSystem();
+    
+    int cameraDist = 30;
+    Point camPosition = new Point(0, 0);
 
     /**
      * A new mini starter.
@@ -79,6 +87,10 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
      */
     public MyJoglCanvasStep6(GLCapabilities capabilities, int width, int height) {
         addGLEventListener(this);
+        addMouseWheelListener(this);
+        addMouseListener(this);
+        
+        addMouseMotionListener(this);
     }
 
     /**
@@ -90,6 +102,7 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
         capabilities.setBlueBits(8);
         capabilities.setGreenBits(8);
         capabilities.setAlphaBits(8);
+        
         return capabilities;
     }
 
@@ -113,7 +126,7 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
         gl2.glClearColor(0f, 0f, 0f, 0f);
 
         // We want a nice perspective.
-        gl2.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+        gl2.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
 
         // Create GLU.
         glu = new GLU();
@@ -168,11 +181,11 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
         gl2.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         // Set camera.
-        setCamera(gl2, glu, 30);
+        setCamera(gl2, glu);
 
         // Prepare light parameters.
         float SHINE_ALL_DIRECTIONS = 1;
-        float[] lightPos = {-30, 0, 0, SHINE_ALL_DIRECTIONS};
+        float[] lightPos = {-0, 0, 0, SHINE_ALL_DIRECTIONS};
         float[] lightColorAmbient = {0.2f, 0.2f, 0.2f, 1f};
         float[] lightColorSpecular = {0.8f, 0.8f, 0.8f, 1f};
 
@@ -205,7 +218,7 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
         gl2.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         // Set camera.
-        setCamera(gl2, glu, 10);
+        setCamera(gl2, glu);
 
         // Prepare light parameters.
         float SHINE_ALL_DIRECTIONS = 1;
@@ -363,7 +376,7 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
     	return Math.sin(iter++ / 360) * 10;
     }
     
-    private void setCamera(GL gl_, GLU glu, float distance) {
+    private void setCamera(GL gl_, GLU glu) {
         // Change to projection matrix.
     	GL2 gl2 = gl_.getGL2();
         gl2.glMatrixMode(GL2.GL_PROJECTION);
@@ -371,8 +384,8 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
 
         // Perspective.
         float widthHeightRatio = (float) getWidth() / (float) getHeight();
-        glu.gluPerspective(45, widthHeightRatio , 1 , 1000 );
-        glu.gluLookAt(getXPosition() * 0, getYPosition() * 0, distance, 0, 0, 0, 0, 1, 0);
+        glu.gluPerspective(45, widthHeightRatio , 1 , 4000 );
+        glu.gluLookAt(0, 0, cameraDist, camPosition.getX() / 10, camPosition.getY() / 10, 0, 0, 1, 0);
 
         // Change back to model view matrix.
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
@@ -386,10 +399,10 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
      */
     public final static void main(String[] args) {
         GLCapabilities capabilities = createGLCapabilities();
-        MyJoglCanvasStep6 canvas = new MyJoglCanvasStep6(capabilities, 800, 500);
+        MyJoglCanvasStep6 canvas = new MyJoglCanvasStep6(capabilities, 3840, 2000);
         JFrame frame = new JFrame("Mini JOGL Demo (breed)");
+        frame.setSize(3840, 2000);
         frame.getContentPane().add(canvas, BorderLayout.CENTER);
-        frame.setSize(800, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         canvas.requestFocus();
@@ -401,4 +414,61 @@ public class MyJoglCanvasStep6 extends GLCanvas implements GLEventListener {
 		
 	}
 
+
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		//IntStream.range(0, e.getRotation().length).mapToDouble(i -> e.getRotation()[i]).forEach(System.out::println);
+		//System.out.println(e.getRotationScale());
+		System.out.println(e.getWheelRotation());
+		
+		cameraDist += e.getWheelRotation();
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	Point p = new Point(0, 0);
+	@Override
+	public void mousePressed(MouseEvent e) {
+		p.set(e.getX(), e.getY());
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		camPosition.setX(p.getX() - e.getX());
+		camPosition.setY(-(p.getY() - e.getY()));
+		
+		p.set(0, 0);
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		camPosition.setX(p.getX() - e.getX());
+		camPosition.setY(-(p.getY() - e.getY()));
+		
+		System.out.println(e.getX());
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

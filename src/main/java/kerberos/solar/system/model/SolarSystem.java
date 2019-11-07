@@ -15,11 +15,11 @@ public class SolarSystem {
 	
 	public SolarSystem() {
 							     //          X    Y     R     M     VX   VY
-		bodies.add(new CosmicBody("Sun", 	750,  350, 	30,   150, 	0, 	 0	));
-		bodies.add(new CosmicBody("Mercury", 800, 350, 	3,      1, 	0, 	-0.53));
-		bodies.add(new CosmicBody("Earth", 	1000, 350, 	4, 		2, 	0, 	-0.2));
-		bodies.add(new CosmicBody("Moon", 	1020, 350, 	1, 		1, 	0, 	-0.3));
-		bodies.add(new CosmicBody("Mars", 	1200, 350, 	4, 		2, 	0, 	-0.15));
+		bodies.add(new CosmicBody("Sun", 	0,  0, 		30,   150, 	0, 	 0		, true));
+		bodies.add(new CosmicBody("Mercury", 50, 0, 	3,      1, 	0, 	-0.53));
+		bodies.add(new CosmicBody("Earth", 	250, 0, 	4, 		2, 	0, 	-0.2));
+		bodies.add(new CosmicBody("Moon", 	270, 0, 	1, 		1, 	0, 	-0.3));
+		bodies.add(new CosmicBody("Mars", 	450, 0, 	4, 		2, 	0, 	-0.15));
 	}
 
 	public void draw(Graphics g) {

@@ -16,6 +16,7 @@ public class CosmicBody {
 	
 	double vx = 0;
 	double vy = 0;
+	boolean isShine = false;
 	
 	
 	
@@ -46,6 +47,12 @@ public class CosmicBody {
 		this.vy = vy;
 	}
 	
+	public CosmicBody(String name, double x, double y, double r, double m, double vx, double vy, boolean isShine) {
+		this(name, x, y, r, m, vx, vy);
+		
+		this.isShine = isShine;
+	}
+
 	public double getR() {
 		return r;
 	}
@@ -105,14 +112,15 @@ public class CosmicBody {
 	}
 
 	public void draw3D(GL2 gl2, GLU glu) {
-
         // Apply texture.
         //earthTexture.enable(gl2);
         //earthTexture.bind(gl2);
 
         // Draw sphere (possible styles: FILL, LINE, POINT).
 		
-		gl2.glTranslatef((float)x / 100, (float)y / 100, 0);
+		gl2.glTranslatef(scale(x), scale(y), 0);
+		
+		if (isShine) setLight(gl2);
 		
         GLUquadric earth = glu.gluNewQuadric();
         glu.gluQuadricTexture(earth, true);
@@ -128,7 +136,23 @@ public class CosmicBody {
         // Save old state.
         //gl2.glPushMatrix();
         
-        gl2.glTranslatef((float)-x / 100, (float)-y / 100, 0);
-
+        gl2.glTranslatef(scale(-x), scale(-y), 0);
 	}
+	private void setLight(GL2 gl2) {
+        float SHINE_ALL_DIRECTIONS = 1;
+        float[] lightPos = {-0, 0, 0, SHINE_ALL_DIRECTIONS};
+        float[] lightColorAmbient = {0.2f, 0.2f, 0.2f, 1f};
+        float[] lightColorSpecular = {0.8f, 0.8f, 0.8f, 1f};
+
+        // Set light parameters.
+        gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, lightPos, 0);
+        gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, lightColorAmbient, 0);
+        gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, lightColorSpecular, 0);
+		
+	}
+
+	private float scale(double n) {
+		return (float) (0.01f * n); 
+	}
+	
 }
