@@ -2,6 +2,10 @@ package kerberos.solar.system.model;
 
 import java.awt.Graphics;
 
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.GLUquadric;
+
 public class CosmicBody {
 	
 	String name;
@@ -98,5 +102,33 @@ public class CosmicBody {
 
 	public void setVy(double vy) {
 		this.vy = vy;
+	}
+
+	public void draw3D(GL2 gl2, GLU glu) {
+
+        // Apply texture.
+        //earthTexture.enable(gl2);
+        //earthTexture.bind(gl2);
+
+        // Draw sphere (possible styles: FILL, LINE, POINT).
+		
+		gl2.glTranslatef((float)x / 100, (float)y / 100, 0);
+		
+        GLUquadric earth = glu.gluNewQuadric();
+        glu.gluQuadricTexture(earth, true);
+        glu.gluQuadricDrawStyle(earth, GLU.GLU_LINE);
+        glu.gluQuadricNormals(earth, GLU.GLU_FLAT);
+        glu.gluQuadricOrientation(earth, GLU.GLU_OUTSIDE);
+        final float radius = (float)r / 100 /*6.378f*/;
+        final int slices = 32;
+        final int stacks = 32;
+        glu.gluSphere(earth, radius, slices, stacks);
+        //glu.gluDeleteQuadric(earth);
+
+        // Save old state.
+        //gl2.glPushMatrix();
+        
+        gl2.glTranslatef((float)-x / 100, (float)-y / 100, 0);
+
 	}
 }

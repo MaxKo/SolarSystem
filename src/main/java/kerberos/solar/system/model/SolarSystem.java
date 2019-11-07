@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.glu.GLU;
+
 public class SolarSystem {
 
 	
@@ -33,12 +36,12 @@ public class SolarSystem {
 				
 				double dx = cs2.getX() - cs1.getX();
 				double dy = cs2.getY() - cs1.getY();
-				double gip = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+				double dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 				
-				double force = 0.1 * cs1.getM() * cs2.getM() / Math.pow(gip, 2);
+				double force = 0.1 * cs1.getM() * cs2.getM() / Math.pow(dist, 2);
 				
-				shiftX +=  force * dx / gip / cs1.getM(); 
-				shiftY +=  force * dy / gip / cs1.getM();
+				shiftX +=  force * dx / dist / cs1.getM(); 
+				shiftY +=  force * dy / dist / cs1.getM();
 			}
 			
 			cs1.setVx(cs1.getVx() + shiftX);
@@ -53,5 +56,9 @@ public class SolarSystem {
 		return bodies.stream()
 	            .map( Object::toString )
 	            .collect( Collectors.joining( ", " ) );
+	}
+
+	public void draw3D(GL2 gl2, GLU glu) {
+		bodies.stream().forEach(cs -> cs.draw3D(gl2, glu));
 	}
 }
