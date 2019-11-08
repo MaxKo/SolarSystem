@@ -1,22 +1,34 @@
 package kerberos.solar.system.model;
 
 import java.awt.Graphics;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 public class CosmicBody {
 	
 	String name;
 	double x = 0;
 	double y = 0;
+	double z = 0;
 	double r = 0;
 	double m = 0;
 	
 	double vx = 0;
 	double vy = 0;
+	double vz = 0;
 	boolean isShine = false;
+	String textureName;
+	Texture texture = null;
 	
 	
 	
@@ -36,22 +48,87 @@ public class CosmicBody {
 		this.m = m;
 	}
 
-	public CosmicBody(String name, double x, double y, double r, double m, double vx, double vy) {
+	public CosmicBody(String name, double x, double y, double z, double r, double m, double vx, double vy, double vz) {
 		super();
 		this.x = x;
 		this.y = y;
+		this.z = z;
 		this.r = r;
 		this.name = name;
 		this.m = m;
 		this.vx = vx;
 		this.vy = vy;
+		this.vz = vz;
+		
 	}
-	
-	public CosmicBody(String name, double x, double y, double r, double m, double vx, double vy, boolean isShine) {
-		this(name, x, y, r, m, vx, vy);
+
+	public CosmicBody(String name, double x, double y, double z, double r, double m, double vx, double vy, double vz, boolean isShine, String textureName) {
+		this(name, x, y, z, r, m, vx, vy, vz);
 		
 		this.isShine = isShine;
+		this.textureName = textureName;
 	}
+
+	
+	public boolean isShine() {
+		return isShine;
+	}
+
+	public void setShine(boolean isShine) {
+		this.isShine = isShine;
+	}
+
+	public String getTextureName() {
+		return textureName;
+	}
+
+	public void setTextureName(String textureName) {
+		this.textureName = textureName;
+	}
+
+	public Texture getTexture() {
+		return texture;
+	}
+
+	public void setTexture(Texture texture) {
+		this.texture = texture;
+	}
+
+	public void initTexture(GL gl2) {
+		if (hasTexture() == false) return;
+		try {
+	        	//InputStream stream = new FileInputStream("src\\main\\resources\\" + textureName);
+				System.out.println(Paths.get("").toAbsolutePath().toString());
+				
+				//InputStream stream = new FileInputStream("src\\main\\resources\\" + textureName);
+				InputStream stream = getClass().getResourceAsStream("/" + textureName);
+				
+	        	System.out.println(Paths.get("").toAbsolutePath().toString());
+	            TextureData data = TextureIO.newTextureData(gl2.getGLProfile(), stream, false, "png");
+	            texture = TextureIO.newTexture(data);
+	        }
+	        catch (IOException exc) {
+	            exc.printStackTrace();
+	            System.exit(2);
+	        }
+	}
+
+	public double getZ() {
+		return z;
+	}
+
+	public void setZ(double z) {
+		this.z = z;
+	}
+
+	public double getVz() {
+		return vz;
+	}
+
+	public void setVz(double vz) {
+		this.vz = vz;
+	}
+
 
 	public double getR() {
 		return r;
@@ -93,6 +170,8 @@ public class CosmicBody {
 	public void move() {
 		x += vx;
 		y += vy;
+		z += vz;
+		
 	}
 
 	public double getVx() {
@@ -112,32 +191,41 @@ public class CosmicBody {
 	}
 
 	public void draw3D(GL2 gl2, GLU glu) {
-        // Apply texture.
-        //earthTexture.enable(gl2);
-        //earthTexture.bind(gl2);
-
-        // Draw sphere (possible styles: FILL, LINE, POINT).
+		// Draw sphere (possible styles: FILL, LINE, POINT).
 		
-		gl2.glTranslatef(scale(x), scale(y), 0);
+		gl2.glTranslatef(scale(x), scale(y), scale(z));
 		
 		if (isShine) setLight(gl2);
+		if (hasTexture()) drawTexture(gl2);
 		
         GLUquadric earth = glu.gluNewQuadric();
         glu.gluQuadricTexture(earth, true);
-        glu.gluQuadricDrawStyle(earth, GLU.GLU_LINE);
+        glu.gluQuadricDrawStyle(earth, hasTexture() ? GLU.GLU_FILL : GLU.GLU_LINE);
         glu.gluQuadricNormals(earth, GLU.GLU_FLAT);
         glu.gluQuadricOrientation(earth, GLU.GLU_OUTSIDE);
         final float radius = (float)r / 100 /*6.378f*/;
         final int slices = 32;
         final int stacks = 32;
         glu.gluSphere(earth, radius, slices, stacks);
-        //glu.gluDeleteQuadric(earth);
-
-        // Save old state.
-        //gl2.glPushMatrix();
+        glu.gluDeleteQuadric(earth);
         
-        gl2.glTranslatef(scale(-x), scale(-y), 0);
+        gl2.glTranslatef(scale(-x), scale(-y), scale(-z));
 	}
+	private void drawTexture(GL2 gl2) {
+        // Set material properties.
+        float[] rgba = {1f, 1f, 1f};
+        gl2.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, rgba, 0);
+        gl2.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, rgba, 0);
+        gl2.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, (isShine) ? 0f : 0.5f);
+		
+        texture.enable(gl2);
+	    texture.bind(gl2);		
+	}
+
+	private boolean hasTexture() {
+		return !(textureName == null || "".equals(textureName));
+	}
+
 	private void setLight(GL2 gl2) {
         float SHINE_ALL_DIRECTIONS = 1;
         float[] lightPos = {-0, 0, 0, SHINE_ALL_DIRECTIONS};
@@ -148,6 +236,10 @@ public class CosmicBody {
         gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, lightPos, 0);
         gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, lightColorAmbient, 0);
         gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, lightColorSpecular, 0);
+        
+        // Enable lighting in GL.
+        gl2.glEnable(GL2.GL_LIGHT1);
+        gl2.glEnable(GL2.GL_LIGHTING);
 		
 	}
 
