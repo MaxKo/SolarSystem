@@ -252,8 +252,6 @@ public class SolarSystemApplication extends GLCanvas implements GLEventListener,
 	public void mouseDragged(MouseEvent e) {
 		camPosition.setX(p.getX() - e.getX());
 		camPosition.setY(-(p.getY() - e.getY()));
-		
-		System.out.println(e.getX());
 	}
 
 	@Override

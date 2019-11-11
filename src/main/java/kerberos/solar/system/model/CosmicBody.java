@@ -1,10 +1,8 @@
 package kerberos.solar.system.model;
 
 import java.awt.Graphics;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -22,6 +20,10 @@ public class CosmicBody {
 	double z = 0;
 	double r = 0;
 	double m = 0;
+	
+	double rotateAxisAngle = 23;
+	double rotateSpeed = -0.2;
+	double rotagteAngle;
 	
 	double vx = 0;
 	double vy = 0;
@@ -97,13 +99,8 @@ public class CosmicBody {
 	public void initTexture(GL gl2) {
 		if (hasTexture() == false) return;
 		try {
-	        	//InputStream stream = new FileInputStream("src\\main\\resources\\" + textureName);
-				System.out.println(Paths.get("").toAbsolutePath().toString());
-				
-				//InputStream stream = new FileInputStream("src\\main\\resources\\" + textureName);
 				InputStream stream = getClass().getResourceAsStream("/" + textureName);
 				
-	        	System.out.println(Paths.get("").toAbsolutePath().toString());
 	            TextureData data = TextureIO.newTextureData(gl2.getGLProfile(), stream, false, "png");
 	            texture = TextureIO.newTexture(data);
 	        }
@@ -154,7 +151,6 @@ public class CosmicBody {
 	}
 
 	public void drawSwing(Graphics g) {
-		//int scale = 10;
 		g.drawOval((int)(x - r / 2), (int)(y - r / 2), (int)r, (int)r );
 	}
 	
@@ -172,6 +168,7 @@ public class CosmicBody {
 		y += vy;
 		z += vz;
 		
+		rotagteAngle += rotateSpeed;
 	}
 
 	public double getVx() {
@@ -194,23 +191,26 @@ public class CosmicBody {
 		// Draw sphere (possible styles: FILL, LINE, POINT).
 		
 		gl2.glTranslatef(scale(x), scale(y), scale(z));
+		gl2.glRotated(rotagteAngle, 0, 0, rotateAxisAngle);
 		
 		if (isShine) setLight(gl2);
 		if (hasTexture()) drawTexture(gl2);
 		
-        GLUquadric earth = glu.gluNewQuadric();
-        glu.gluQuadricTexture(earth, true);
-        glu.gluQuadricDrawStyle(earth, hasTexture() ? GLU.GLU_FILL : GLU.GLU_LINE);
-        glu.gluQuadricNormals(earth, GLU.GLU_FLAT);
-        glu.gluQuadricOrientation(earth, GLU.GLU_OUTSIDE);
+        GLUquadric glBody = glu.gluNewQuadric();
+        glu.gluQuadricTexture(glBody, true);
+        glu.gluQuadricDrawStyle(glBody, hasTexture() ? GLU.GLU_FILL : GLU.GLU_LINE);
+        glu.gluQuadricNormals(glBody, GLU.GLU_FLAT);
+        glu.gluQuadricOrientation(glBody, GLU.GLU_OUTSIDE);
         final float radius = (float)r / 100 /*6.378f*/;
         final int slices = 32;
         final int stacks = 32;
-        glu.gluSphere(earth, radius, slices, stacks);
-        glu.gluDeleteQuadric(earth);
+        glu.gluSphere(glBody, radius, slices, stacks);
+        glu.gluDeleteQuadric(glBody);
         
+        gl2.glRotated(-rotagteAngle, 0, 0, rotateAxisAngle);
         gl2.glTranslatef(scale(-x), scale(-y), scale(-z));
 	}
+	
 	private void drawTexture(GL2 gl2) {
         // Set material properties.
         float[] rgba = {1f, 1f, 1f};
