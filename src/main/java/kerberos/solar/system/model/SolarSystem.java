@@ -21,13 +21,13 @@ public class SolarSystem {
 	}
 
 	private void initSystem() {
-								//          		X    Y   Z  R     M     VX   VY 	VZ
-		bodies.add(new CosmicBody("Sun", 			0,  0, 	 0,	30,   150, 	0, 	 0,		0, 	true, "2k_sun.png"));
-		bodies.add(new CosmicBody("Mercury", 		50, 0,   0,	3,      2, 	0, 	-0.53, 	0, false, "2k_mercury.png"));
-		bodies.add(new CosmicBody("Asteroid",		0, 55,   0,	1,    0.1, 	0.05, -0.1, 	-0.53));		
-		bodies.add(new CosmicBody("Earth", 			250, 0,  0,	4, 		6, 	0, 	-0.2, 	0, false, "earthmap1k.png"));
-		bodies.add(new CosmicBody("Moon", 			270, 0,  0, 1, 		1, 	0, 	-0.37,	0, false, "2k_moon.png"));
-		bodies.add(new CosmicBody("Mars", 			450, 0,  0, 4, 		2, 	0, 	-0.15,	0, false, "2k_mars.png"));
+								//          		X    Y   Z  R     M     VX   	VY 		VZ
+		bodies.add(new CosmicBody("Sun", 			0,  0, 	 0,	30,   150, 	0, 	 	0,		0, 	true, "2k_sun.png"));
+		bodies.add(new CosmicBody("Mercury", 		50, 0,   0,	3,      10, 	0, 		-0.53, 	0, false, "2k_mercury.png"));
+		bodies.add(new CosmicBody("Asteroid",		0, 51,   0,	1,    0.1, 	0.05, 	-0.1, 	-0.53));		
+		bodies.add(new CosmicBody("Earth", 			250, 0,  0,	4, 		6, 	0, 		-0.2, 	0, false, "earthmap1k.png"));
+		bodies.add(new CosmicBody("Moon", 			270, 0,  0, 1, 		1, 	0, 		-0.37,	0, false, "2k_moon.png"));
+		bodies.add(new CosmicBody("Mars", 			450, 0,  0, 4, 		2, 	0, 		-0.15,	0, false, "2k_mars.png"));
 		
 		bodies.stream().forEach(cb -> cb.initTexture(gl2));
 	}

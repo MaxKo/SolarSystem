@@ -7,6 +7,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import com.jogamp.nativewindow.util.Point;
@@ -59,8 +60,10 @@ public class SolarSystemApplication extends GLCanvas implements GLEventListener,
     
     private SolarSystem solarSystem;// = new SolarSystem();
     
-    int cameraDist = 10;
-    Point camPosition = new Point(0, 0);
+    //int cameraDist = 10;
+    //Point camPosition = new Point(0, 0);
+    
+    CPoint camPosition = new CPoint();
 
     /**
      * A new mini starter.
@@ -186,8 +189,12 @@ public class SolarSystemApplication extends GLCanvas implements GLEventListener,
 
         // Perspective.
         float widthHeightRatio = (float) getWidth() / (float) getHeight();
-        glu.gluPerspective(45, widthHeightRatio , 1 , 4000 );
-        glu.gluLookAt(0, 0, cameraDist, (float) camPosition.getX() / 800 * cameraDist, (float) camPosition.getY() / 800 * cameraDist, 0, 0, 1, 0);
+        glu.gluPerspective(45, widthHeightRatio, 1 , 4000 );
+        glu.gluLookAt(camPosition.getEyeX(), camPosition.getCenterY(), camPosition.getCameraDist(),
+        		camPosition.getCenterX(), 
+        		camPosition.getCenterY(), 
+        		0, 
+        			0, 1, 0);
 
         // Change back to model view matrix.
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
@@ -200,15 +207,39 @@ public class SolarSystemApplication extends GLCanvas implements GLEventListener,
      * @param args Command line args.
      */
     public final static void main(String[] args) {
-        GLCapabilities capabilities = createGLCapabilities();
+    	
+    	JFrame frame = new JFrame("Border Layout");
+		JButton button,button1, button2, button3,button4;
+		button = new JButton("left");
+		button1 = new JButton("right");
+		button2 = new JButton("top");
+		button3 = new JButton("bottom");
+		
+		frame.add(button,BorderLayout.WEST);
+		frame.add(button1, BorderLayout.EAST);
+		frame.add(button2, BorderLayout.NORTH);
+		frame.add(button3, BorderLayout.SOUTH);
+		frame.setSize(1920, 1080);
+		//frame.add(button4, BorderLayout.CENTER);
+		
+		//frame.setSize(300,300);  
+		//frame.setVisible(true);  
+    	
+		JFrame frameC = new JFrame("center");
+		GLCapabilities capabilities = createGLCapabilities();
         SolarSystemApplication canvas = new SolarSystemApplication(capabilities, 3840, 2000);
         canvas.setSize(1920, 1080);
-        JFrame frame = new JFrame("Solar system JOGL ");
-        frame.setSize(canvas.getPreferredSize()); 
+        //JFrame frame = new JFrame("Solar system JOGL ");
+        frameC.setSize(canvas.getPreferredSize()); 
         frame.getContentPane().add(canvas, BorderLayout.CENTER);
+
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         canvas.requestFocus();
+        
+        
+        
     }
 
 	@Override
@@ -219,7 +250,8 @@ public class SolarSystemApplication extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		cameraDist += e.getWheelRotation();
+		//cameraDist += e.getWheelRotation();
+		camPosition.moveCameraDist(e.getWheelRotation());
 	}
 
 	@Override
@@ -252,6 +284,7 @@ public class SolarSystemApplication extends GLCanvas implements GLEventListener,
 	public void mouseDragged(MouseEvent e) {
 		camPosition.setX(p.getX() - e.getX());
 		camPosition.setY(-(p.getY() - e.getY()));
+		//camPosition.setZ(-(p.getY() - e.getY()));
 	}
 
 	@Override
